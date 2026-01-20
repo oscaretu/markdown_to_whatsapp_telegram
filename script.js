@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyBtn = document.getElementById('copy-btn');
     const platformRadios = document.querySelectorAll('input[name="platform"]');
     const headingStyleSelect = document.getElementById('heading-style');
+    const tableStyleSelect = document.getElementById('table-style');
 
     /**
      * Transform headings based on style and platform
@@ -61,13 +62,153 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * Parse a markdown table into structured data
+     * @param {string} tableText - Raw markdown table text
+     * @returns {Object} - { headers: string[], rows: string[][] }
+     */
+    function parseMarkdownTable(tableText) {
+        const lines = tableText.trim().split('\n');
+        const headers = [];
+        const rows = [];
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+
+            // Skip separator line (|---|---|)
+            if (/^\|?[\s\-:]+\|[\s\-:|]+\|?$/.test(line)) {
+                continue;
+            }
+
+            // Parse cells from line
+            const cells = line
+                .replace(/^\||\|$/g, '') // Remove leading/trailing pipes
+                .split('|')
+                .map(cell => cell.trim());
+
+            if (i === 0) {
+                headers.push(...cells);
+            } else if (cells.length > 0 && cells.some(c => c !== '')) {
+                rows.push(cells);
+            }
+        }
+
+        return { headers, rows };
+    }
+
+    /**
+     * Transform tables based on style and platform
+     * @param {string} text - Text with markdown tables
+     * @param {string} style - Table style (none, code, list, compact, unicode)
+     * @param {string} platform - Target platform (whatsapp, telegram)
+     * @returns {string} - Text with transformed tables
+     */
+    function transformTables(text, style, platform) {
+        const boldStart = platform === 'whatsapp' ? '*' : '**';
+        const boldEnd = platform === 'whatsapp' ? '*' : '**';
+
+        // Match markdown tables (lines starting with | or containing |)
+        const tableRegex = /(?:^|\n)((?:\|[^\n]+\|(?:\n|$))+)/g;
+
+        return text.replace(tableRegex, (match, tableContent) => {
+            const { headers, rows } = parseMarkdownTable(tableContent);
+
+            if (headers.length === 0) {
+                return match;
+            }
+
+            const leadingNewline = match.startsWith('\n') ? '\n' : '';
+
+            switch (style) {
+                case 'none':
+                    // Plain text: just comma-separated values
+                    let plainResult = headers.join(', ') + '\n';
+                    rows.forEach(row => {
+                        plainResult += row.join(', ') + '\n';
+                    });
+                    return leadingNewline + plainResult.trim();
+
+                case 'code':
+                    // Code block with aligned columns
+                    const colWidths = headers.map((h, i) => {
+                        const maxRowWidth = Math.max(...rows.map(r => (r[i] || '').length));
+                        return Math.max(h.length, maxRowWidth);
+                    });
+
+                    let codeResult = '```\n';
+                    codeResult += headers.map((h, i) => h.padEnd(colWidths[i])).join(' | ') + '\n';
+                    codeResult += colWidths.map(w => '-'.repeat(w)).join('-+-') + '\n';
+                    rows.forEach(row => {
+                        codeResult += row.map((cell, i) => (cell || '').padEnd(colWidths[i])).join(' | ') + '\n';
+                    });
+                    codeResult += '```';
+                    return leadingNewline + codeResult;
+
+                case 'list':
+                    // List format: each row as a block
+                    let listResult = '';
+                    rows.forEach((row, rowIndex) => {
+                        listResult += `${boldStart}Row ${rowIndex + 1}:${boldEnd}\n`;
+                        headers.forEach((header, i) => {
+                            listResult += `• ${header}: ${row[i] || ''}\n`;
+                        });
+                        if (rowIndex < rows.length - 1) {
+                            listResult += '\n';
+                        }
+                    });
+                    return leadingNewline + listResult.trim();
+
+                case 'compact':
+                    // Compact: key: value pairs per row
+                    let compactResult = '';
+                    rows.forEach((row, rowIndex) => {
+                        const pairs = headers.map((header, i) =>
+                            `${boldStart}${header}:${boldEnd} ${row[i] || ''}`
+                        );
+                        compactResult += pairs.join(' | ') + '\n';
+                    });
+                    return leadingNewline + compactResult.trim();
+
+                case 'unicode':
+                    // Unicode box drawing
+                    const uColWidths = headers.map((h, i) => {
+                        const maxRowWidth = Math.max(...rows.map(r => (r[i] || '').length));
+                        return Math.max(h.length, maxRowWidth);
+                    });
+
+                    let unicodeResult = '```\n';
+                    // Top border
+                    unicodeResult += '┌' + uColWidths.map(w => '─'.repeat(w + 2)).join('┬') + '┐\n';
+                    // Headers
+                    unicodeResult += '│' + headers.map((h, i) => ` ${h.padEnd(uColWidths[i])} `).join('│') + '│\n';
+                    // Header separator
+                    unicodeResult += '├' + uColWidths.map(w => '─'.repeat(w + 2)).join('┼') + '┤\n';
+                    // Rows
+                    rows.forEach((row, rowIndex) => {
+                        unicodeResult += '│' + row.map((cell, i) => ` ${(cell || '').padEnd(uColWidths[i])} `).join('│') + '│\n';
+                    });
+                    // Bottom border
+                    unicodeResult += '└' + uColWidths.map(w => '─'.repeat(w + 2)).join('┴') + '┘\n';
+                    unicodeResult += '```';
+                    return leadingNewline + unicodeResult;
+
+                default:
+                    return match;
+            }
+        });
+    }
+
+    /**
      * Convert Markdown to WhatsApp format
      * @param {string} text - Markdown text
      * @param {string} headingStyle - Style for heading transformation
+     * @param {string} tableStyle - Style for table transformation
      * @returns {string} - WhatsApp formatted text
      */
-    function convertToWhatsApp(text, headingStyle) {
+    function convertToWhatsApp(text, headingStyle, tableStyle) {
         let result = text;
+
+        // Transform tables first (before preserving code blocks)
+        result = transformTables(result, tableStyle, 'whatsapp');
 
         // Preserve code blocks (no change needed)
         const codeBlocks = [];
@@ -114,10 +255,14 @@ document.addEventListener('DOMContentLoaded', () => {
      * Convert Markdown to Telegram format
      * @param {string} text - Markdown text
      * @param {string} headingStyle - Style for heading transformation
+     * @param {string} tableStyle - Style for table transformation
      * @returns {string} - Telegram formatted text
      */
-    function convertToTelegram(text, headingStyle) {
+    function convertToTelegram(text, headingStyle, tableStyle) {
         let result = text;
+
+        // Transform tables first (before preserving code blocks)
+        result = transformTables(result, tableStyle, 'telegram');
 
         // Preserve code blocks (no change needed)
         const codeBlocks = [];
@@ -175,6 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const markdown = markdownInput.value;
         const platform = getSelectedPlatform();
         const headingStyle = headingStyleSelect.value;
+        const tableStyle = tableStyleSelect.value;
 
         if (!markdown.trim()) {
             outputText.value = '';
@@ -182,8 +328,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const converted = platform === 'whatsapp'
-            ? convertToWhatsApp(markdown, headingStyle)
-            : convertToTelegram(markdown, headingStyle);
+            ? convertToWhatsApp(markdown, headingStyle, tableStyle)
+            : convertToTelegram(markdown, headingStyle, tableStyle);
 
         outputText.value = converted;
     }
@@ -202,6 +348,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Reset heading style to default (bold)
         headingStyleSelect.value = 'bold';
+
+        // Reset table style to default (code)
+        tableStyleSelect.value = 'code';
 
         // Reset copy button state
         copyBtn.textContent = 'Copy to Clipboard';
