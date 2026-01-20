@@ -19,16 +19,29 @@
                 <textarea id="markdown-input" placeholder="Paste your Markdown text here..."></textarea>
             </section>
 
-            <section class="platform-selector">
-                <span class="selector-label">Platform:</span>
-                <label class="radio-label">
-                    <input type="radio" name="platform" value="whatsapp" checked>
-                    <span>WhatsApp</span>
-                </label>
-                <label class="radio-label">
-                    <input type="radio" name="platform" value="telegram">
-                    <span>Telegram</span>
-                </label>
+            <section class="options-panel">
+                <div class="option-group">
+                    <span class="selector-label">Platform:</span>
+                    <label class="radio-label">
+                        <input type="radio" name="platform" value="whatsapp" checked>
+                        <span>WhatsApp</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="platform" value="telegram">
+                        <span>Telegram</span>
+                    </label>
+                </div>
+
+                <div class="option-group">
+                    <label class="selector-label" for="heading-style">Headings:</label>
+                    <select id="heading-style">
+                        <option value="none">None (remove #)</option>
+                        <option value="bold" selected>Bold only</option>
+                        <option value="bold-upper">Bold + UPPERCASE</option>
+                        <option value="decorated">Decorated (═══)</option>
+                        <option value="hierarchical">Hierarchical</option>
+                    </select>
+                </div>
             </section>
 
             <section class="action-buttons">

@@ -88,20 +88,47 @@ textarea[readonly] {
     cursor: default;
 }
 
-.platform-selector {
+.options-panel {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 1rem;
-    flex-wrap: wrap;
     padding: 1rem;
     background-color: var(--card-bg);
     border-radius: 8px;
     box-shadow: var(--shadow);
 }
 
+.option-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
 .selector-label {
     font-weight: 600;
     color: var(--text-color);
+    min-width: 80px;
+}
+
+select {
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+select:hover {
+    border-color: var(--primary-color);
 }
 
 .radio-label {
