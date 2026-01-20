@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MD2Chat Converter</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MD2Chat Converter</h1>
+            <p>Convert Markdown to WhatsApp or Telegram format</p>
+        </header>
+
+        <main>
+            <section class="input-section">
+                <label for="markdown-input">Markdown Input</label>
+                <textarea id="markdown-input" placeholder="Paste your Markdown text here..."></textarea>
+            </section>
+
+            <section class="platform-selector">
+                <span class="selector-label">Platform:</span>
+                <label class="radio-label">
+                    <input type="radio" name="platform" value="whatsapp" checked>
+                    <span>WhatsApp</span>
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="platform" value="telegram">
+                    <span>Telegram</span>
+                </label>
+            </section>
+
+            <section class="action-buttons">
+                <button id="convert-btn" class="btn btn-primary">Convert</button>
+                <button id="clear-btn" class="btn btn-secondary">Clear</button>
+            </section>
+
+            <section class="output-section">
+                <label for="output-text">Converted Output</label>
+                <textarea id="output-text" readonly placeholder="Converted text will appear here..."></textarea>
+                <button id="copy-btn" class="btn btn-copy">Copy to Clipboard</button>
+            </section>
+        </main>
+
+        <footer>
+            <p>MD2Chat Converter - Vanilla JS</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
