@@ -12,9 +12,21 @@ The UI should be clean, modern, and responsive (Mobile-first).
 - **Platform Selector:** A radio button group with two options:
     - `WhatsApp` (default)
     - `Telegram`
+- **Heading Style Selector:** A dropdown to choose heading transformation style:
+    - `None (remove #)`: Removes # markers, keeps plain text
+    - `Bold only` (default): Wraps in platform-specific bold
+    - `Bold + UPPERCASE`: Bold with uppercase text
+    - `Decorated (═══)`: Adds line decorators based on level
+    - `Hierarchical`: Different styles per heading level (H1-H6)
+- **Table Style Selector:** A dropdown to choose table transformation style:
+    - `None (plain text)`: Comma-separated values
+    - `Code block` (default): Aligned table in monospace
+    - `List format`: Each row as bulleted list with headers as labels
+    - `Compact (key: value)`: Key-value pairs per row
+    - `Unicode box`: Table with box-drawing characters (┌─┬─┐)
 - **Action Buttons:**
     - `Convert`: Triggers the transformation logic.
-    - `Clear`: Resets all textareas and restores the default radio selection.
+    - `Clear`: Resets all textareas and restores the default selections.
 - **Output Area:** A `textarea` (read-only) showing the converted text.
 - **Copy Button:** A secondary button to copy the output to the clipboard.
 
@@ -33,6 +45,18 @@ The converter must use JavaScript Regular Expressions (RegEx) to map Markdown to
 - **WhatsApp:** Bold uses single asterisks `*`, Italic uses single underscores `_`.
 - **Telegram:** Bold uses double asterisks `**`, Italic uses double underscores `__`.
 - **Constraint:** Maintain original line breaks and spacing.
+
+### Heading Transformation:
+Headings (`#` to `######`) are transformed based on selected style:
+- Styles use platform-specific bold markers (`*` for WhatsApp, `**` for Telegram)
+- Hierarchical style differentiates levels: H1 (decorated uppercase), H2 (decorated), H3 (bold with arrow), H4-H6 (indented bullets)
+
+### Table Transformation:
+Markdown tables are parsed and converted based on selected style:
+- Tables are detected by lines containing `|` characters
+- Headers and rows are extracted, separator lines (`|---|`) are removed
+- Code block and Unicode styles wrap output in triple backticks for monospace rendering
+- List and compact styles use platform-specific bold for labels
 
 ## 4. Technical Implementation
 - **Architecture:** Single Page Application (SPA).
