@@ -1,0 +1,99 @@
+# =============================================================================
+# CI/CD Pipeline para MD2Chat Converter
+# =============================================================================
+# Este archivo configura GitHub Actions para automatizar dos procesos:
+#
+# 1. CI (Continuous Integration): Analiza automáticamente tu código cuando
+#    haces cambios para detectar errores y problemas de calidad.
+#
+# 2. CD (Continuous Deployment): Despliega automáticamente tu aplicación
+#    a GitHub Pages cuando haces push a la rama master.
+#
+# GitHub Actions es el servicio gratuito de GitHub para CI/CD.
+# Ejuta este código en servidores de GitHub cada vez que haces cambios.
+# =============================================================================
+
+# Nombre visible del pipeline en GitHub Actions
+name: CI/CD Pipeline
+
+# Eventos que disparan el workflow
+on:
+  push:
+    # Se ejecuta cuando haces un push a estas ramas
+    branches: [ master, main ]
+  pull_request:
+    # Se ejecuta cuando creas un PR a estas ramas
+    branches: [ master, main ]
+
+jobs:
+  lint:
+    # Primer job: análisis de código para detectar errores
+    name: Lint code
+    # Sistema operativo donde se ejecuta el job
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: descarga el código del repositorio
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Paso 2: instala Node.js versión 20 (para ejecutar los linters)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          # Caché de dependencias para acelerar ejecuciones futuras
+          cache: 'npm'
+
+      # Paso 3: instala herramientas de análisis de código
+      - name: Install dependencies
+        run: |
+          npm install -g htmlhint eslint stylelint
+
+      # Paso 4: valida el archivo HTML buscando errores
+      - name: Lint HTML
+        # || true hace que el job no falle si hay errores (opcional)
+        run: htmlhint index.html --config .htmlhintrc || true
+
+      # Paso 5: valida el archivo CSS buscando errores
+      - name: Lint CSS
+        run: stylelint "style.css" --config .stylelintrc || true
+
+      # Paso 6: valida el archivo JavaScript buscando errores
+      - name: Lint JavaScript
+        run: eslint script.js --config .eslintrc || true
+
+  deploy:
+    # Segundo job: despliega la aplicación a GitHub Pages
+    name: Deploy to GitHub Pages
+    # Este job se ejecuta solo después de que el job 'lint' termine
+    needs: lint
+    runs-on: ubuntu-latest
+    # Solo se ejecuta cuando haces un PUSH a la rama master (no en PRs)
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+
+    # Permisos necesarios para escribir en GitHub Pages
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    steps:
+      # Paso 1: descarga el código del repositorio
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Paso 2: configura GitHub Pages para este repositorio
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      # Paso 3: sube los archivos para ser publicados
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Directorio a desplegar ('.' significa todo el repositorio)
+          path: '.'
+
+      # Paso 4: publica los archivos en GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
