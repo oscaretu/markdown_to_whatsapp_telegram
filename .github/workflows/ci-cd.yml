@@ -42,8 +42,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # Caché de dependencias para acelerar ejecuciones futuras
-          cache: 'npm'
 
       # Paso 3: instala herramientas de análisis de código
       - name: Install dependencies
