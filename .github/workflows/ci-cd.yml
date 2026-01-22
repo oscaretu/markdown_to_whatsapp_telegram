@@ -43,23 +43,22 @@ jobs:
         with:
           node-version: '20'
 
-      # Paso 3: instala herramientas de análisis de código
+      # Paso 3: instala dependencias del proyecto
       - name: Install dependencies
-        run: |
-          npm install -g htmlhint eslint stylelint
+        run: npm install
 
       # Paso 4: valida el archivo HTML buscando errores
       - name: Lint HTML
         # || true hace que el job no falle si hay errores (opcional)
-        run: htmlhint index.html --config .htmlhintrc || true
+        run: npx htmlhint index.html --config .htmlhintrc || true
 
       # Paso 5: valida el archivo CSS buscando errores
       - name: Lint CSS
-        run: stylelint "style.css" --config .stylelintrc || true
+        run: npx stylelint "style.css" --config .stylelintrc || true
 
       # Paso 6: valida el archivo JavaScript buscando errores
       - name: Lint JavaScript
-        run: eslint script.js --config .eslintrc || true
+        run: npx eslint script.js || true
 
   deploy:
     # Segundo job: despliega la aplicación a GitHub Pages

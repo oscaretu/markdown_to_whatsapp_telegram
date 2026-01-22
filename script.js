@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 case 'compact':
                     // Compact: key: value pairs per row
                     let compactResult = '';
-                    rows.forEach((row, rowIndex) => {
+                    rows.forEach((row) => {
                         const pairs = headers.map((header, i) =>
                             `${boldStart}${header}:${boldEnd} ${row[i] || ''}`
                         );
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Header separator
                     unicodeResult += '├' + uColWidths.map(w => '─'.repeat(w + 2)).join('┼') + '┤\n';
                     // Rows
-                    rows.forEach((row, rowIndex) => {
+                    rows.forEach((row) => {
                         unicodeResult += '│' + row.map((cell, i) => ` ${(cell || '').padEnd(uColWidths[i])} `).join('│') + '│\n';
                     });
                     // Bottom border
@@ -379,7 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 copyBtn.textContent = 'Copy to Clipboard';
                 copyBtn.classList.remove('copied');
             }, 2000);
-        } catch (err) {
+        } catch {
             // Fallback for older browsers
             outputText.select();
             document.execCommand('copy');

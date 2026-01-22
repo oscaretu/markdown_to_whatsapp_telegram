@@ -1,12 +1,3 @@
 {
-  "rules": {
-    "block-no-empty": true,
-    "color-no-invalid-hex": true,
-    "comment-empty-line-before": "always",
-    "declaration-colon-space-after": "always",
-    "declaration-block-trailing-semicolon": "always",
-    "indentation": 2,
-    "max-empty-lines": 2,
-    "rule-empty-line-before": "always"
-  }
+  "rules": {}
 }
