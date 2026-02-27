@@ -9,6 +9,7 @@ A simple web application that converts standard Markdown syntax into the specifi
 - **Table Styles:** 5 configurable styles for Markdown tables
 - **No Dependencies:** Pure vanilla JavaScript, HTML5, and CSS3
 - **Responsive Design:** Mobile-first approach, works on all devices
+- **Robust Parser:** Uses the marked library for correct Markdown parsing
 - **Copy to Clipboard:** One-click copy functionality
 
 ## Supported Transformations
@@ -66,7 +67,8 @@ cd markdown_to_whatsapp_telegram
 
 - `index.html` - Main HTML structure
 - `style.css` - Responsive CSS styles
-- `script.js` - Conversion logic with RegEx
+- `script.js` - Conversion logic with RegEx (original version)
+- `script-marked.js` - Conversion logic using marked parser
 
 ## License
 

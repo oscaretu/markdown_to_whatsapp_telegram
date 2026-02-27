@@ -9,6 +9,7 @@ Aplicación web sencilla que convierte sintaxis Markdown estándar al formato es
 - **Estilos de tablas:** 5 estilos configurables para tablas Markdown
 - **Sin dependencias:** JavaScript puro, HTML5 y CSS3
 - **Diseño responsive:** Enfoque mobile-first, funciona en todos los dispositivos
+- **Parser robusto:** Utiliza la librería marked para un parsing correcto de Markdown
 - **Copiar al portapapeles:** Funcionalidad de copiado con un clic
 
 ## Transformaciones soportadas
@@ -66,7 +67,8 @@ cd markdown_to_whatsapp_telegram
 
 - `index.html` - Estructura HTML principal
 - `style.css` - Estilos CSS responsive
-- `script.js` - Lógica de conversión con RegEx
+- `script.js` - Lógica de conversión con RegEx (versión original)
+- `script-marked.js` - Lógica de conversión usando parser marked
 
 ## Licencia
 
